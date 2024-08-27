@@ -17,22 +17,26 @@
 # для `Veterinarian`).
 
 # Базовый класс Animal
-class Animal():
+
+
+import pickle  # модуль для работы с загрузкой/выгрузкой кода в файл
+
+
+class Animal(): # базовый класс
     def __init__(self, name, age):
         self.name = name
         self.age = age
 
-    def make_sound(self):
+    def make_sound(self): # звук животного заглушен, так как будет переопределен в подклассах
         pass
 
     def eat(self):
         print(f"{self.name} ест")
 
-    def walk(self):
+    def walk(self): # стиль ходьбы заглушен, так как будет переопределен в подклассах
         pass
 
-# Подкласс Bird, наследующий от Animal
-class Bird(Animal):
+class Bird(Animal):  # Подкласс Bird, наследующий от Animal
     def __init__(self, name, age, size):
         super().__init__(name, age)
         self.size = size
@@ -42,8 +46,7 @@ class Bird(Animal):
     def walk(self):
         print(f"{self.name} летает")
 
-# Подкласс Mammal, наследующий от Animal
-class Mammal(Animal):
+class Mammal(Animal): # Подкласс Mammal, наследующий от Animal
     def __init__(self, name, age, fur_color):
         super().__init__(name, age)
         self.fur_color = fur_color
@@ -61,8 +64,8 @@ class Cat(Mammal): # подкласс Cat наследующий от Mammal д�
         print(f"{self.name} мяукает")
 
 
-# Подкласс Reptile, наследующий от Animal
-class Reptile(Animal):
+
+class Reptile(Animal):  # Подкласс Reptile, наследующий от Animal
     def __init__(self, name, age, scale_type):
         super().__init__(name, age)
         self.scale_type = scale_type
@@ -72,8 +75,8 @@ class Reptile(Animal):
     def walk(self):
         print(f"{self.name} ползает")
 
-# Функция для демонстрации полиморфизма
-def animal_sound(animals):
+
+def animal_sound(animals): # Функция для демонстрации полиморфизма
     for animal in animals:
         animal.eat()
         animal.make_sound()
@@ -94,8 +97,8 @@ class Veterinarian:
     def heal_animal(self, animal):
         print(f"{self.name} лечит {animal.name}")
 
-# Класс Zoo, использующий композицию
-class Zoo:
+
+class Zoo:  # Класс Zoo, использующий композицию
     def __init__(self):
         self.animals = []
         self.staff = []
@@ -106,10 +109,30 @@ class Zoo:
     def add_staff(self, staff_member):
         self.staff.append(staff_member)
 
+    def save_to_file(self, filename):
+        with open(filename, 'wb') as file:
+            pickle.dump(self, file)
+        print("Zoo state saved to file.")
+
+    @staticmethod
+    def load_from_file(filename):
+        try:
+            with open(filename, 'rb') as file:
+                zoo = pickle.load(file)
+            print("Zoo state loaded from file.")
+            return zoo
+        except FileNotFoundError:
+            print("File not found. Returning an empty zoo.")
+            return Zoo()
+
 
 if __name__ == "__main__":
+    # Загружаем состояние зоопарка из файла
+   zoo = Zoo.load_from_file('zoo_state.pkl')
+   if not zoo.animals and not zoo.staff:
 
     # Создаем животных
+
     sparrow = Bird("Вася", 2, "Маленький")
     tiger = Mammal("Гриша", 5, "Желтый")
     snake = Reptile("Гена", 3, "Гладкий")
@@ -134,6 +157,9 @@ if __name__ == "__main__":
     # Используем методы сотрудников
     zookeeper.feed_animal(tiger)
     vet.heal_animal(snake)
+
+    # Сохраняем состояние зоопарка в файл
+    # zoo.save_to_file('zoo_state.pkl')
 
 
 
